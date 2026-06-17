@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@biohackbuilder — Optimize. Build. Dominate.</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=DM+Sans:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --volt: #c8f000;
+    --black: #0a0a0a;
+    --mid: #111111;
+    --border: #1e1e1e;
+    --white: #f0ede6;
+    --muted: #555;
+    --ember: #ff4d00;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    padding: 40px 0 0;
+    text-align: center;
+  }
+
+  .logo-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .logo-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .logo-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .logo-text span { color: var(--volt); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 48px 0 40px;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(200,240,0,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--volt);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0.85;
+  }
+
+  .hero-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: clamp(48px, 12vw, 72px);
+    line-height: 0.88;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .hero-name .volt { color: var(--volt); }
+
+  .hero-bio {
+    font-size: 16px;
+    color: #888;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  /* ── STATS ── */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 44px;
+    border: 1px solid var(--border);
+  }
+
+  .stat {
+    flex: 1;
+    padding: 18px 8px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--volt);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ── SECTION LABEL ── */
+  .sec-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--volt);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.75;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sec-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── LEAD MAGNET ── */
+  .lead-magnet {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--volt);
+    padding: 28px 24px;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lead-magnet::before {
+    content: '7';
+    position: absolute;
+    right: -8px;
+    top: -20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 160px;
+    color: #fff;
+    opacity: 0.025;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .lm-badge {
+    display: inline-block;
+    background: rgba(200,240,0,0.1);
+    border: 1px solid rgba(200,240,0,0.3);
+    color: var(--volt);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    padding: 5px 12px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .lm-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1.05;
+    color: var(--white);
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+
+  .lm-title span { color: var(--volt); }
+
+  .lm-desc {
+    font-size: 14px;
+    color: #777;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .lm-includes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+
+  .lm-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #888;
+  }
+
+  .lm-item::before {
+    content: '→';
+    color: var(--volt);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  /* ── EMAIL FORM ── */
+  .form-wrap {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    padding: 28px 24px;
+    margin-bottom: 32px;
+  }
+
+  .form-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .form-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .form-input {
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    padding: 15px 18px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .form-input::placeholder { color: #3a3a3a; }
+
+  .form-input:focus { border-color: var(--volt); }
+
+  .form-btn {
+    background: var(--volt);
+    color: #0a0a0a;
+    border: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 16px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    width: 100%;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .form-btn:hover { opacity: 0.9; }
+  .form-btn:active { transform: scale(0.98); }
+
+  .form-note {
+    font-size: 11px;
+    color: #333;
+    text-align: center;
+    margin-top: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  /* SUCCESS STATE */
+  .success-state {
+    display: none;
+    text-align: center;
+    padding: 32px 0;
+  }
+
+  .success-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+  }
+
+  .success-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    color: var(--volt);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .success-text {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.7;
+  }
+
+  /* ── LINKS ── */
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .link-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 22px;
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 400;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+
+  .link-btn:hover {
+    border-color: var(--volt);
+    background: rgba(200,240,0,0.04);
+  }
+
+  .link-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    width: 32px;
+    text-align: center;
+  }
+
+  .link-text { flex: 1; }
+  .link-title { display: block; font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+  .link-sub { display: block; font-size: 12px; color: var(--muted); font-weight: 300; }
+
+  .link-arrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--volt);
+    opacity: 0.6;
+  }
+
+  .link-btn.featured {
+    border-color: rgba(200,240,0,0.35);
+    background: rgba(200,240,0,0.05);
+  }
+
+  .link-btn.featured .link-title { color: var(--volt); }
+
+  /* ── PILLARS ── */
+  .pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 40px;
+  }
+
+  .pillar {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    padding: 18px 16px;
+    text-align: center;
+  }
+
+  .pillar-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+
+  .pillar-name {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ── INSTAGRAM CTA ── */
+  .ig-cta {
+    text-align: center;
+    padding: 36px 0 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .ig-handle {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    letter-spacing: 3px;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .ig-handle span { color: var(--volt); }
+
+  .ig-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .ig-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 1px solid rgba(200,240,0,0.4);
+    color: var(--volt);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    padding: 14px 28px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background 0.2s;
+  }
+
+  .ig-btn:hover { background: rgba(200,240,0,0.06); }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding: 20px 0 36px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #222;
+    text-transform: uppercase;
+    border-top: 1px solid #111;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* delay helpers */
+  .d1 { transition-delay: 0.1s; }
+  .d2 { transition-delay: 0.2s; }
+  .d3 { transition-delay: 0.3s; }
+  .d4 { transition-delay: 0.4s; }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 0;
+    margin-bottom: 40px;
+    background: #0d0d0d;
+  }
+
+  .ticker {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 20s linear infinite;
+    gap: 0;
+  }
+
+  .ticker-item {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #333;
+    text-transform: uppercase;
+    padding: 0 32px;
+    flex-shrink: 0;
+  }
+
+  .ticker-item span { color: var(--volt); margin-right: 8px; }
+
+  @keyframes ticker {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header fade-up visible">
+    <div class="logo-wrap">
+      <svg class="logo-icon" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,6 108,33 108,87 60,114 12,87 12,33" fill="none" stroke="#c8f000" stroke-width="2" opacity="0.5"/>
+        <path d="M 50 46 C 42 44 38 52 40 59 C 38 63 40 69 45 70 C 46 75 50 77 54 75 L 54 82 L 66 82 L 66 75 C 70 77 74 75 75 70 C 80 69 82 63 80 59 C 82 52 78 44 70 46 C 68 41 64 38 60 38 C 56 38 52 41 50 46Z" fill="none" stroke="#c8f000" stroke-width="2" stroke-linejoin="round"/>
+        <line x1="60" y1="40" x2="60" y2="82" stroke="#c8f000" stroke-width="1" opacity="0.4"/>
+        <polygon points="62,48 56,64 62,64 59,78 68,60 62,60 65,48" fill="#c8f000"/>
+      </svg>
+      <div class="logo-text">BIOHACK<span>BUILDER</span></div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero fade-up visible d1">
+    <div class="hero-tag">⚡ Science-backed performance</div>
+    <div class="hero-name">
+      OPTIMIZE.<br>
+      BUILD.<br>
+      <span class="volt">DOMINATE.</span>
+    </div>
+    <p class="hero-bio">
+      Daily protocols to sharpen your focus, boost your energy, optimize your metabolism, and build the life you want — backed by science, not hype.
+    </p>
+  </div>
+
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap fade-up visible d2">
+  <div class="ticker">
+    <span class="ticker-item"><span>⚡</span>Focus Protocols</span>
+    <span class="ticker-item"><span>🔥</span>Metabolism Hacks</span>
+    <span class="ticker-item"><span>🧠</span>Brain Optimization</span>
+    <span class="ticker-item"><span>😴</span>Sleep Science</span>
+    <span class="ticker-item"><span>🌿</span>Hormone Health</span>
+    <span class="ticker-item"><span>🧊</span>Cold Exposure</span>
+    <span class="ticker-item"><span>💊</span>Supplement Stacks</span>
+    <span class="ticker-item"><span>⏱️</span>Deep Work Methods</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><span>⚡</span>Focus Protocols</span>
+    <span class="ticker-item"><span>🔥</span>Metabolism Hacks</span>
+    <span class="ticker-item"><span>🧠</span>Brain Optimization</span>
+    <span class="ticker-item"><span>😴</span>Sleep Science</span>
+    <span class="ticker-item"><span>🌿</span>Hormone Health</span>
+    <span class="ticker-item"><span>🧊</span>Cold Exposure</span>
+    <span class="ticker-item"><span>💊</span>Supplement Stacks</span>
+    <span class="ticker-item"><span>⏱️</span>Deep Work Methods</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats fade-up d2">
+    <div class="stat">
+      <div class="stat-num">10+</div>
+      <div class="stat-label">Protocols</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Free</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">Science</div>
+      <div class="stat-label">Backed</div>
+    </div>
+  </div>
+
+  <!-- FREE DOWNLOAD -->
+  <div class="sec-label fade-up d2">Free Download</div>
+
+  <div class="lead-magnet fade-up d2">
+    <div class="lm-badge">⬇ Free PDF Guide</div>
+    <div class="lm-title">THE 7-DAY<br><span>FOCUS PROTOCOL</span></div>
+    <p class="lm-desc">A complete daily system to rebuild your focus, boost your energy, and perform at your peak — in just 7 days. No equipment. No supplements. Just science.</p>
+    <div class="lm-includes">
+      <div class="lm-item">Day-by-day action plan (10 pages)</div>
+      <div class="lm-item">Morning sunlight & circadian protocol</div>
+      <div class="lm-item">90-minute deep work method</div>
+      <div class="lm-item">Box breathing technique</div>
+      <div class="lm-item">Evening wind-down stack</div>
+      <div class="lm-item">Complete daily system — Day 7</div>
+    </div>
+  </div>
+
+  <!-- EMAIL FORM -->
+  <div class="form-wrap fade-up d3" id="formWrap">
+    <div class="form-title">GET YOUR FREE COPY</div>
+    <p class="form-sub">Enter your email and receive the protocol instantly. No spam, ever.</p>
+    <div class="form-group">
+      <input class="form-input" type="text" id="nameInput" placeholder="Your first name" autocomplete="given-name">
+      <input class="form-input" type="email" id="emailInput" placeholder="Your email address" autocomplete="email">
+      <button class="form-btn" onclick="handleSubmit()">SEND ME THE PROTOCOL →</button>
+    </div>
+    <p class="form-note">🔒 No spam · Unsubscribe anytime · 100% free</p>
+  </div>
+
+  <div class="success-state" id="successState">
+    <div class="success-icon">⚡</div>
+    <div class="success-title">YOU ARE IN.</div>
+    <p class="success-text">Your 7-Day Focus Protocol is opening now ⚡<br><br>If it doesn't open automatically, <a href="https://biohackbuilder-ctrl.github.io/biohackbuilder/7-Day-Focus-Protocol-BiohackBuilder.pdf" target="_blank" style="color:#c8f000;">click here to download</a>.<br><br>Follow <strong style="color:#f0ede6">@biohackbuilder</strong> on Instagram for daily protocols.</p>
+  </div>
+
+  <!-- CONTENT PILLARS -->
+  <div class="sec-label fade-up d3">What You Will Learn</div>
+
+  <div class="pillars fade-up d3">
+    <div class="pillar">
+      <span class="pillar-icon">⚡</span>
+      <div class="pillar-name">Energy & Focus</div>
+    </div>
+    <div class="pillar">
+      <span class="pillar-icon">🔥</span>
+      <div class="pillar-name">Metabolism</div>
+    </div>
+    <div class="pillar">
+      <span class="pillar-icon">🧠</span>
+      <div class="pillar-name">Brain Health</div>
+    </div>
+    <div class="pillar">
+      <span class="pillar-icon">😴</span>
+      <div class="pillar-name">Sleep Science</div>
+    </div>
+    <div class="pillar">
+      <span class="pillar-icon">🌿</span>
+      <div class="pillar-name">Hormone Health</div>
+    </div>
+    <div class="pillar">
+      <span class="pillar-icon">🧊</span>
+      <div class="pillar-name">Cold Exposure</div>
+    </div>
+  </div>
+
+  <!-- LINKS -->
+  <div class="sec-label fade-up d3">Quick Links</div>
+
+  <div class="links fade-up d3">
+    <a class="link-btn featured" href="https://biohackbuilder-ctrl.github.io/biohackbuilder/7-Day-Focus-Protocol-BiohackBuilder.pdf" target="_blank">
+      <span class="link-icon">📥</span>
+      <span class="link-text">
+        <span class="link-title">Free 7-Day Focus Protocol</span>
+        <span class="link-sub">Download the free PDF guide instantly</span>
+      </span>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-btn" href="https://instagram.com/biohackbuilder" target="_blank" rel="noopener">
+      <span class="link-icon">📱</span>
+      <span class="link-text">
+        <span class="link-title">Follow on Instagram</span>
+        <span class="link-sub">Daily biohacking protocols & tips</span>
+      </span>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-btn" href="#">
+      <span class="link-icon">🧠</span>
+      <span class="link-text">
+        <span class="link-title">Browse All Protocols</span>
+        <span class="link-sub">Sleep · Focus · Metabolism · Hormones</span>
+      </span>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-btn" href="#">
+      <span class="link-icon">💊</span>
+      <span class="link-text">
+        <span class="link-title">Supplement Guide</span>
+        <span class="link-sub">What actually works — and what doesn't</span>
+      </span>
+      <span class="link-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- INSTAGRAM CTA -->
+  <div class="ig-cta fade-up d4">
+    <div class="ig-handle">@BIOHACK<span>BUILDER</span></div>
+    <p class="ig-sub">New science-backed protocol every week. Follow along.</p>
+    <a class="ig-btn" href="https://instagram.com/biohackbuilder" target="_blank" rel="noopener">
+      ⚡ Follow on Instagram
+    </a>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    © 2026 Biohackbuilder · All rights reserved
+  </div>
+
+</div>
+
+<script>
+  // Intersection observer for fade-up
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up:not(.visible)').forEach(el => obs.observe(el));
+
+  // Form submit
+  function handleSubmit() {
+    const name = document.getElementById('nameInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!name) {
+      document.getElementById('nameInput').style.borderColor = '#ff4d00';
+      document.getElementById('nameInput').focus();
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      document.getElementById('emailInput').style.borderColor = '#ff4d00';
+      document.getElementById('emailInput').focus();
+      return;
+    }
+
+    // Show success + open PDF
+    document.getElementById('formWrap').style.display = 'none';
+    const success = document.getElementById('successState');
+    success.style.display = 'block';
+    success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      window.open('https://biohackbuilder-ctrl.github.io/biohackbuilder/7-Day-Focus-Protocol-BiohackBuilder.pdf', '_blank');
+    }, 800);
+
+    // In production: send to your email service (Mailchimp, ConvertKit, etc.)
+    console.log('New subscriber:', name, email);
+  }
+
+  // Enter key on inputs
+  document.getElementById('emailInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleSubmit();
+  });
+
+  // Reset border on input
+  document.querySelectorAll('.form-input').forEach(inp => {
+    inp.addEventListener('input', function() {
+      this.style.borderColor = '#2a2a2a';
+    });
+  });
+</script>
+
+</body>
+</html>
